@@ -2,10 +2,7 @@ package com.example.simplesqljavaapp;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -43,6 +40,7 @@ public class UI extends Application {
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
 
+//                if(a.getSelectedRow()!=null) { a.getSelectedRow().clear(); }
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
                 tableView.getItems().clear();
@@ -51,12 +49,25 @@ public class UI extends Application {
                 tableViewVBox.getChildren().add(tableView);
                 });
         });
-
-
 //                tableComboBox.getValue diyeceksin
 //                burdan sana bir string değeri dönecek
 //                bu değeri getData ya koyacaksın ve
 //                burdan devam edeceksin
+
+
+        deleteButton.setOnAction(e ->{
+            if(a.getSelectedRow()!=null) {
+
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Unable to delete");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select row.\n");
+                alert.showAndWait();
+                return;
+            }
+        });
+
 
 
 
