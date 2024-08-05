@@ -62,11 +62,12 @@ public class Sql {
     }
 
     public TableView<Map<String, Object>> getData(String database_name, String table_name) {
-//        if(selectedRow!=null) {
-//            selectedRow.clear();
-//        }
 
+        if (selectedRow != null && !selectedRow.isEmpty()) {
+                selectedRow.clear();
+        }
 
+//        System.out.println(selectedRow); //Selected rowu basıyor
         TableView<Map<String, Object>> tableView = new TableView<>();
         ObservableList<Map<String, Object>> observableList = FXCollections.observableArrayList();
 

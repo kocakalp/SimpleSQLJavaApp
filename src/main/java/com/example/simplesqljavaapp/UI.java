@@ -55,13 +55,13 @@ public class UI extends Application {
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
 
-//                if(a.getSelectedRow()!=null) { a.getSelectedRow().clear(); }
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
                 tableView.getItems().clear();
                 tableView = a.getData(databaseComboBox.getValue(), tableComboBox.getValue());
                 tableView.refresh();
                 tableViewVBox.getChildren().add(tableView);
+//               System.out.println(a.getSelectedRow()); //Selected rowu basıyor
                 });
         });
 //                tableComboBox.getValue diyeceksin
@@ -71,15 +71,15 @@ public class UI extends Application {
 
 
         deleteButton.setOnAction(e ->{
-            if(a.getSelectedRow()!=null) {
+//            System.out.println(a.getSelectedRow() + " BUTTON"); //Selected rowu basıyor
+            if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
 
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Unable to delete");
                 alert.setHeaderText(null);
-                alert.setContentText("Please select row.\n");
+                alert.setContentText("Please select a row.\n");
                 alert.showAndWait();
-                return;
             }
         });
 
