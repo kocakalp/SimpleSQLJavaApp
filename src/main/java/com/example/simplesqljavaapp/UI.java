@@ -3,8 +3,10 @@ package com.example.simplesqljavaapp;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Map;
@@ -28,8 +30,21 @@ public class UI extends Application {
         Button updateButton = new Button("Update");
         buttonHbox.getChildren().addAll(createButton, deleteButton, selectButton, updateButton);
 
+
+        Font font = new Font(30);
+
+        Label databaseLabel = new Label("Database");
+        databaseLabel.setFont(font);
         ComboBox<String> databaseComboBox = new ComboBox<>();
+        HBox labelHbox_1 = new HBox();
+        labelHbox_1.getChildren().addAll(databaseLabel,databaseComboBox);
+
+        Label tableLabel = new Label("Table");
+        tableLabel.setFont(font);
         ComboBox<String> tableComboBox = new ComboBox<>();
+        HBox labelHbox_2 = new HBox();
+        labelHbox_2.getChildren().addAll(tableLabel,tableComboBox);
+
 
 
 
@@ -72,9 +87,11 @@ public class UI extends Application {
 
 
 
-        maninBox.getChildren().addAll(databaseComboBox, tableComboBox, data_1, data_2, data_3, buttonHbox, tableViewVBox);
+        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, data_1, data_2, data_3, buttonHbox, tableViewVBox);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SQL DATA");
+        stage.getIcons().add(new Image("/view.gif"));
+        stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
     }
