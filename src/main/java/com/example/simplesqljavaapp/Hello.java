@@ -119,7 +119,18 @@ public class Hello extends Application {
 
 
         public static void main(String[] args) {
-            System.out.println("hello");
+            String input = "Selected row: {f30=KARISIMSIZ, f10=null, f32=null,";
+
+            // Extract substring between '{' and the first ','
+            int startIndex = input.indexOf("{") + 1; // After '{'
+            int endIndex = input.indexOf(","); // Before the first ','
+
+            if (startIndex > 0 && endIndex > startIndex) {
+                String result = input.substring(startIndex, endIndex);
+                System.out.println("Extracted value: " + result);
+            } else {
+                System.out.println("Value not found");
+            }
             //launch(args);
         }
     }

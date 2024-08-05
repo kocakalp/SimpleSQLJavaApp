@@ -132,7 +132,56 @@ public class Sql {
 
 
 
-    public TableView<Map<String, Object>> deleteData() {
+    public TableView<Map<String, Object>> deleteData(String table_name) {
+        String b= selectedRow.toString();
+//        PreparedStatement st = connection.prepareStatement("DELETE FROM Table WHERE name = '" + name + "';");
+
+        String c=null;
+        int startIndex = b.indexOf("{") + 1;
+        int endIndex = b.indexOf("=") + 1;
+        if (startIndex > 0 && endIndex > startIndex) {
+            String result = b.substring(startIndex, endIndex);
+            c = result;
+            System.out.println(c);
+        } else {
+            System.out.println("Value not found");
+        }
+
+        String d=null;
+        int startIndex2 = b.indexOf("=") + 1;
+        int endIndex2 = b.indexOf(",");
+        if (startIndex2 > 0 && endIndex2 > startIndex2) {
+            String result = b.substring(startIndex2, endIndex2);
+            d = result;
+            System.out.println(d);
+        } else {
+            System.out.println("Value not found");
+        }
+
+
+        try (Connection connection = DriverManager.getConnection(URL)) {
+            if (connection != null) {
+                System.out.println("Connection established successfully.");
+                Statement stmt = connection.createStatement();
+
+                if(table_name != null) {
+                    PreparedStatement st = connection.prepareStatement("DELETE FROM" + table_name + "WHERE" + c + "'"+ d + "'" + ";");
+                    st.executeUpdate();
+                }
+
+            } else {
+                System.out.println("Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+
+
+
+
 
 
         return null;
