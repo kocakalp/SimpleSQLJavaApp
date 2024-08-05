@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 
 public class Sql {
     private final String URL = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
-    private static final String URL_withoutdatabase = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=";
+    private  final String URL_withoutdatabase = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=";
 
     public Sql() {
     }
@@ -74,18 +74,18 @@ public class Sql {
             System.out.println("SQL State: " + e.getSQLState());
             e.printStackTrace();
         }
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                Map<String, Object> selectedRow = newSelection;
-                String a = selectedRow.toString();
-                System.out.println(a+"yukarı");
-                if(!a.contains("ReadOnlyObjectProperty [bean: javafx.scene.control.TableView$TableViewArrayListSelectionModel@")) {
-                    // Handle the selected row, e.g., enable buttons or display details
-                    System.out.println("Selected row: " + selectedRow);
-                    System.out.println(a+"aşağı");
-                }
-            }
-        });
+//        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+//            if (newSelection != null) {
+//                Map<String, Object> selectedRow = newSelection;
+//                String a = selectedRow.toString();
+//                System.out.println(a+"yukarı");
+//                if(!a.contains("ReadOnlyObjectProperty [bean: javafx.scene.control.TableView$TableViewArrayListSelectionModel@")) {
+//                    // Handle the selected row, e.g., enable buttons or display details
+//                    System.out.println("Selected row: " + selectedRow);
+//                    System.out.println(a+"aşağı");
+//                }
+//            }
+//        });
         return tableView;
     }
 //    tableView.getSelectionModel().selectedItemProperty() nerde kullanabilirim
