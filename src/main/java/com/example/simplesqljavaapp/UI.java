@@ -22,10 +22,6 @@ public class UI extends Application {
         VBox textfieldVBox = new VBox();
         Sql a= new Sql();
 
-        TextField data_1 = new TextField();
-        TextField data_2 = new TextField();
-        TextField data_3 = new TextField();
-
         Button createButton = new Button("Create");
         Button deleteButton = new Button("Delete");
         Button selectButton = new Button("Select");
@@ -64,17 +60,6 @@ public class UI extends Application {
                 tableView.refresh();
                 tableViewVBox.getChildren().add(tableView);
 //               System.out.println(a.getSelectedRow()); //Selected rowu basıyor
-
-
-                if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
-                    ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
-                    for (String i: columnNamesArraylist) {
-                        TextField data_4 = new TextField(i);
-                        textfieldVBox.getChildren().add(data_4);
-                    }
-                } else {
-                    textfieldVBox.getChildren().clear();
-                }
                 });
         });
 //                tableComboBox.getValue diyeceksin
@@ -98,12 +83,41 @@ public class UI extends Application {
 
 
 
+        Scene scene2 = new Scene(textfieldVBox, 320, 240);
+        Stage stage2 = new Stage();
+        createButton.setOnAction(e ->{
+            if (tableComboBox.getValue()!=null) {// tableComboBox'un içinde değer varsa
+                stage2.setTitle("SQL Create Screen");
+                stage2.getIcons().add(new Image("/sailing.gif"));
+
+                if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
+                    textfieldVBox.getChildren().clear();
+                    ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
+                    for (String i: columnNamesArraylist) {
+                        TextField data_4 = new TextField(i);
+                        textfieldVBox.getChildren().add(data_4);
+                    }
+                }
+                stage2.setScene(scene2);
+                stage2.show();
+
+            } else {
+                Alert alert1 = new Alert(Alert.AlertType.WARNING);
+                alert1.setTitle("Unable to create");
+                alert1.setHeaderText(null);
+                alert1.setContentText("Please select a table.\n");
+                alert1.showAndWait();
+            }
+        });
 
 
 
 
 
-        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, textfieldVBox, buttonHbox, tableViewVBox);
+
+
+
+        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SQL DATA");
         stage.getIcons().add(new Image("/view.gif"));

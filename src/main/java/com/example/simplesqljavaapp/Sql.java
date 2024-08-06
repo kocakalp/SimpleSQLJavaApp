@@ -183,6 +183,8 @@ public class Sql {
     }
 
 
+
+
     public TableView<Map<String, Object>> deleteData(String database_name, String table_name) {
 
         String fullUrl = URL_withoutdatabase + database_name + ";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
