@@ -140,9 +140,8 @@ public class Hello extends Application {
 public class Hello {
         public static void main(String[] args) {
 
-            String a = "Mecidiye Köy";
-
-            System.out.println( a.indexOf("Köy"));
+            int a =3 ;
+            System.out.println(a%3==0);
 
 
 

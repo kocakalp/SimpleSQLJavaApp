@@ -15,7 +15,8 @@ import java.sql.ResultSet;
 
 public class Sql {
     private final String URL = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
-    private  final String URL_withoutdatabase = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=";
+    private final String URL_withoutdatabaseStart = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=";
+    private final String URL_withoutdatabaseEnd =";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
     private Map<String, Object> selectedRow;
 
     public Sql() {
@@ -44,7 +45,7 @@ public class Sql {
     public ArrayList<String> getTableNames(String database) {
 
         ArrayList<String> tables = new ArrayList<>();
-        String fullUrl = URL_withoutdatabase + database + ";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
+        String fullUrl = URL_withoutdatabaseStart + database + URL_withoutdatabaseEnd;
 
         try (Connection connection = DriverManager.getConnection(fullUrl)) {
             DatabaseMetaData metaData = connection.getMetaData();
@@ -141,7 +142,6 @@ public class Sql {
         });
         return tableView;
     }
-//    tableView.getSelectionModel().selectedItemProperty() nerde kullanabilirim
 
 
 
@@ -187,7 +187,7 @@ public class Sql {
 
     public TableView<Map<String, Object>> deleteData(String database_name, String table_name) {
 
-        String fullUrl = URL_withoutdatabase + database_name + ";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
+        String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
         String primaryKeyColumn=null;
 
         try (Connection connection = DriverManager.getConnection(fullUrl)) {
@@ -274,7 +274,32 @@ public class Sql {
     }
 
 
+    public String getPrimaryKey(String database_name, String table_name)  {
+        String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
+        String primaryKeyColumn = null;
+        String holder = null;
+        try (Connection connection = DriverManager.getConnection(fullUrl)) {
+            if (connection != null) {
+                System.out.println("Connection established successfully.");
 
+                DatabaseMetaData metaData = connection.getMetaData();
+                try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, table_name)) {
+                    while (primaryKeys.next()) {
+                        primaryKeyColumn = primaryKeys.getString("COLUMN_NAME");
+                        holder =("Primary Key Column: " + primaryKeyColumn);
+                    }
+                }
+            } else {
+                System.out.println("Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+        return holder;
+    }
 
     public Map<String, Object> getSelectedRow() {
         return selectedRow;

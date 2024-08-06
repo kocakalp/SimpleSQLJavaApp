@@ -20,6 +20,7 @@ public class UI extends Application {
         HBox buttonHbox = new HBox();
         VBox tableViewVBox = new VBox();
         VBox textfieldVBox = new VBox();
+        VBox updateVBox = new VBox();
         Sql a= new Sql();
 
         Button createButton = new Button("Create");
@@ -29,16 +30,16 @@ public class UI extends Application {
         buttonHbox.getChildren().addAll(createButton, deleteButton, selectButton, updateButton);
 
 
-        Font font = new Font(30);
+        Font font_30 = new Font(30);
 
         Label databaseLabel = new Label("Database");
-        databaseLabel.setFont(font);
+        databaseLabel.setFont(font_30);
         ComboBox<String> databaseComboBox = new ComboBox<>();
         HBox labelHbox_1 = new HBox();
         labelHbox_1.getChildren().addAll(databaseLabel,databaseComboBox);
 
         Label tableLabel = new Label("Table");
-        tableLabel.setFont(font);
+        tableLabel.setFont(font_30);
         ComboBox<String> tableComboBox = new ComboBox<>();
         HBox labelHbox_2 = new HBox();
         labelHbox_2.getChildren().addAll(tableLabel,tableComboBox);
@@ -68,7 +69,7 @@ public class UI extends Application {
 //                burdan devam edeceksin
 
 
-        deleteButton.setOnAction(e ->{
+        deleteButton.setOnAction(e -> {
 //            System.out.println(a.getSelectedRow() + " BUTTON"); //Selected rowu basıyor
             if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
                 a.deleteData(databaseComboBox.getValue(), tableComboBox.getValue());
@@ -83,12 +84,38 @@ public class UI extends Application {
 
 
 
-        Scene scene2 = new Scene(textfieldVBox, 320, 240);
-        Stage stage2 = new Stage();
+        Scene updateScene = new Scene(updateVBox, 320, 240);
+        Stage updateStage = new Stage();
+        updateButton.setOnAction(e -> {
+            if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
+                    updateStage.setTitle("SQL Update Screen");
+                    updateStage.getIcons().add(new Image("/dinodino.png"));
+                    if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
+                        updateVBox.getChildren().clear();
+                        TextField field = new TextField(a.getSelectedRow().toString());
+                        updateVBox.getChildren().add(field);
+                    }
+                    Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
+                    primarkeyLabel.setFont(font_30);
+                    updateVBox.getChildren().add(primarkeyLabel);
+                    updateStage.setScene(updateScene);
+                    updateStage.show();
+
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Unable to update");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select a row.\n");
+                alert.showAndWait();
+            }
+        });
+
+        Scene createScene = new Scene(textfieldVBox, 320, 240);
+        Stage createStage = new Stage();
         createButton.setOnAction(e ->{
             if (tableComboBox.getValue()!=null) {// tableComboBox'un içinde değer varsa
-                stage2.setTitle("SQL Create Screen");
-                stage2.getIcons().add(new Image("/sailing.gif"));
+                createStage.setTitle("SQL Create Screen");
+                createStage.getIcons().add(new Image("/sailing.gif"));
 
                 if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
                     textfieldVBox.getChildren().clear();
@@ -98,8 +125,8 @@ public class UI extends Application {
                         textfieldVBox.getChildren().add(data_4);
                     }
                 }
-                stage2.setScene(scene2);
-                stage2.show();
+                createStage.setScene(createScene);
+                createStage.show();
 
             } else {
                 Alert alert1 = new Alert(Alert.AlertType.WARNING);
