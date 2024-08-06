@@ -132,7 +132,7 @@ public class Sql {
 
 
 
-    public TableView<Map<String, Object>> deleteData(String table_name) {
+    public TableView<Map<String, Object>> deleteData(String database_name, String table_name) {
         String b= selectedRow.toString();
 //        PreparedStatement st = connection.prepareStatement("DELETE FROM Table WHERE name = '" + name + "';");
 
@@ -165,7 +165,8 @@ public class Sql {
                 Statement stmt = connection.createStatement();
 
                 if(table_name != null) {
-                    PreparedStatement st = connection.prepareStatement("DELETE FROM" + table_name + "WHERE" + c + "'"+ d + "'" + ";");
+                    System.out.println("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
+                    PreparedStatement st = connection.prepareStatement("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
                     st.executeUpdate();
                 }
 

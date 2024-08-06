@@ -73,7 +73,7 @@ public class UI extends Application {
         deleteButton.setOnAction(e ->{
 //            System.out.println(a.getSelectedRow() + " BUTTON"); //Selected rowu basıyor
             if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
-                a.deleteData(tableComboBox.getValue());
+                a.deleteData(databaseComboBox.getValue(), tableComboBox.getValue());
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Unable to delete");
