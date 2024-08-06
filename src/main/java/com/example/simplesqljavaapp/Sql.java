@@ -38,22 +38,25 @@ public class Sql {
         return databases;
     }
 
+
+
+
     public ArrayList<String> getTableNames(String database) {
 
         ArrayList<String> tables = new ArrayList<>();
         String fullUrl = URL_withoutdatabase + database + ";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
 
         try (Connection connection = DriverManager.getConnection(fullUrl)) {
-                DatabaseMetaData metaData = connection.getMetaData();
-                try (ResultSet resultSet = metaData.getTables(null, null, "%", new String[] {"TABLE"})) {
-                    while (resultSet.next()) {
-                        if(!resultSet.getString("TABLE_NAME").equals("sysdiagrams")&&
-                                !resultSet.getString("TABLE_NAME").equals("trace_xe_event_map")&&
-                                !resultSet.getString("TABLE_NAME").equals("trace_xe_action_map")) {
-                            tables.add(resultSet.getString("TABLE_NAME"));
-                        }
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet resultSet = metaData.getTables(null, null, "%", new String[] {"TABLE"})) {
+                while (resultSet.next()) {
+                    if(!resultSet.getString("TABLE_NAME").equals("sysdiagrams")&&
+                            !resultSet.getString("TABLE_NAME").equals("trace_xe_event_map")&&
+                            !resultSet.getString("TABLE_NAME").equals("trace_xe_action_map")) {
+                        tables.add(resultSet.getString("TABLE_NAME"));
                     }
                 }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,10 +64,20 @@ public class Sql {
         return tables;
     }
 
+
+
+
+
+
+
+
+
+
+
     public TableView<Map<String, Object>> getData(String database_name, String table_name) {
 
         if (selectedRow != null && !selectedRow.isEmpty()) {
-                selectedRow.clear();
+            selectedRow.clear();
         }
 
 //        System.out.println(selectedRow); //Selected rowu basıyor
@@ -132,43 +145,113 @@ public class Sql {
 
 
 
-    public TableView<Map<String, Object>> deleteData(String database_name, String table_name) {
-        String b= selectedRow.toString();
-//        PreparedStatement st = connection.prepareStatement("DELETE FROM Table WHERE name = '" + name + "';");
 
-        String c=null;
-        int startIndex = b.indexOf("{") + 1;
-        int endIndex = b.indexOf("=") + 1;
-        if (startIndex > 0 && endIndex > startIndex) {
-            String result = b.substring(startIndex, endIndex);
-            c = result;
-            System.out.println(c);
-        } else {
-            System.out.println("Value not found");
-        }
 
-        String d=null;
-        int startIndex2 = b.indexOf("=") + 1;
-        int endIndex2 = b.indexOf(",");
-        if (startIndex2 > 0 && endIndex2 > startIndex2) {
-            String result = b.substring(startIndex2, endIndex2);
-            d = result;
-            System.out.println(d);
-        } else {
-            System.out.println("Value not found");
-        }
 
+
+
+
+
+
+    public ArrayList<String> getColumnNames(String database_name, String table_name){
+        ArrayList<String> columnnamesArraylist= new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(URL)) {
             if (connection != null) {
                 System.out.println("Connection established successfully.");
                 Statement stmt = connection.createStatement();
-
                 if(table_name != null) {
-                    System.out.println("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
-                    PreparedStatement st = connection.prepareStatement("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
-                    st.executeUpdate();
+                    ResultSet sql = stmt.executeQuery("SELECT * FROM " + database_name +".[dbo]."+ table_name);
+                    ResultSetMetaData rsMetaData = sql.getMetaData();
+                    int count = rsMetaData.getColumnCount();
+                    for(int i = 1; i<=count; i++) {
+                        String columnName = rsMetaData.getColumnName(i);
+                        columnnamesArraylist.add(columnName);
+                    }
                 }
+            } else {
+                System.out.println("Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+
+        return columnnamesArraylist;
+    }
+
+
+    public TableView<Map<String, Object>> deleteData(String database_name, String table_name) {
+
+        String fullUrl = URL_withoutdatabase + database_name + ";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
+        String primaryKeyColumn=null;
+
+        try (Connection connection = DriverManager.getConnection(fullUrl)) {
+            if (connection != null) {
+                System.out.println("Connection established successfully.");
+//                Statement stmt = connection.createStatement();
+                DatabaseMetaData metaData = connection.getMetaData();
+                try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, table_name)) {
+                    while (primaryKeys.next()) {
+                        primaryKeyColumn = primaryKeys.getString("COLUMN_NAME");
+                        System.out.println("Primary Key Column: " + primaryKeyColumn);
+                    }
+                }
+
+                String selectedRowString = selectedRow.toString();
+//        PreparedStatement st = connection.prepareStatement("DELETE FROM Table WHERE name = '" + name + "';");
+
+
+                //Eğer Primary key en sonda ise primary key ve değerini çıkarır
+                String c = null;
+                int startIndex = selectedRowString.indexOf(primaryKeyColumn);
+                int endIndex = selectedRowString.indexOf("}");
+                if (startIndex > 0 && endIndex > startIndex) {
+                    c = selectedRowString.substring(startIndex, endIndex);
+                    System.out.println(c);
+                } else {
+                    System.out.println("Value not found");
+                }
+
+                //Eğer Primary key'in son dışında olma durumları için
+                String e =null;
+                int startIndex2 = selectedRowString.indexOf(primaryKeyColumn);
+                int endIndex2 = selectedRowString.indexOf(",");
+                if (startIndex2 > 0 && endIndex2 > startIndex2) {
+                    c = selectedRowString.substring(startIndex2, endIndex2);
+                    System.out.println(c);
+                } else {
+                    System.out.println("Value not found");
+                }
+
+
+
+
+
+
+//                String d=null;
+//                int startIndex2 = selectedRowString.indexOf("=") + 1;
+//                int endIndex2 = selectedRowString.indexOf(",");
+//                if (startIndex2 > 0 && endIndex2 > startIndex2) {
+//                    String result = selectedRowString.substring(startIndex2, endIndex2);
+//                    d = result;
+//                    System.out.println(d);
+//                } else {
+//                    System.out.println("Value not found");
+//                }
+//
+//
+//
+//
+//
+//
+//                if(table_name != null) {
+//                    System.out.println("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
+//                    PreparedStatement st = connection.prepareStatement("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
+//                    st.executeUpdate();
+//                }
 
             } else {
                 System.out.println("Failed to establish connection.");
@@ -197,4 +280,5 @@ public class Sql {
 }
 
 //"jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=Try;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
+
 

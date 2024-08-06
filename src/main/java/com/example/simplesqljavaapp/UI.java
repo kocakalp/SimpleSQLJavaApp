@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -18,6 +19,7 @@ public class UI extends Application {
         VBox maninBox = new VBox();
         HBox buttonHbox = new HBox();
         VBox tableViewVBox = new VBox();
+        VBox textfieldVBox = new VBox();
         Sql a= new Sql();
 
         TextField data_1 = new TextField();
@@ -54,7 +56,7 @@ public class UI extends Application {
             tableComboBox.getItems().clear();
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
-
+                textfieldVBox.getChildren().clear();
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
                 tableView.getItems().clear();
@@ -62,6 +64,17 @@ public class UI extends Application {
                 tableView.refresh();
                 tableViewVBox.getChildren().add(tableView);
 //               System.out.println(a.getSelectedRow()); //Selected rowu basıyor
+
+
+                if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
+                    ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
+                    for (String i: columnNamesArraylist) {
+                        TextField data_4 = new TextField(i);
+                        textfieldVBox.getChildren().add(data_4);
+                    }
+                } else {
+                    textfieldVBox.getChildren().clear();
+                }
                 });
         });
 //                tableComboBox.getValue diyeceksin
@@ -87,7 +100,10 @@ public class UI extends Application {
 
 
 
-        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, data_1, data_2, data_3, buttonHbox, tableViewVBox);
+
+
+
+        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, textfieldVBox, buttonHbox, tableViewVBox);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SQL DATA");
         stage.getIcons().add(new Image("/view.gif"));

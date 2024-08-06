@@ -9,9 +9,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.sql.*;
 import java.util.Map;
 
 
+/*
 public class Hello extends Application {
         @Override
         public void start(Stage primaryStage) {
@@ -133,5 +135,45 @@ public class Hello extends Application {
             }
             //launch(args);
         }
-    }
+}    */
+
+public class Hello {
+        public static void main(String[] args) {
+
+            String a = "Mecidiye Köy";
+
+            System.out.println( a.indexOf("Köy"));
+
+
+
+
+            //
+//
+//
+//
+//
+//
+//            try (Connection connection = DriverManager.getConnection("jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=Try;integratedSecurity=true;encrypt=true;trustServerCertificate=true;")) {
+//                String tableName = "eXE"; // Buraya tablo adını yazın
+//                findPrimaryKey(connection, tableName);
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+            }
+        }
+
+//        public static void findPrimaryKey(Connection connection, String tableName) throws SQLException {
+//            DatabaseMetaData metaData = connection.getMetaData();
+//            try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName)) {
+//                while (primaryKeys.next()) {
+//                    String primaryKeyColumn = primaryKeys.getString("COLUMN_NAME");
+//                    System.out.println("Primary Key Column: " + primaryKeyColumn);
+//                }
+//            }
+//        }
+//    }
+
+
+
+
+
 
