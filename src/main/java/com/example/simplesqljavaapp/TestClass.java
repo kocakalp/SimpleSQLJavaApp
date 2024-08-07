@@ -145,13 +145,38 @@ public class Hello extends Application {
         }
 }    */
 
-public class TestClass  {
+public class TestClass {
+
+
     public static void main(String[] args) {
+        String selectedRow1 = "{Address=Obere Str. 57, PostalCode=12209, Country=Germany, CustomerID=asfaıhfıa, CustomerName=Alfreds Futterkiste, City=Berlin, ContactName=Maria Anders}";
+        String selectedRow2 = "{ShipperName=United Package, Phone=(503) 555-3199, ShipperID=2}";
+        String selectedRow3 = "{earning_id=1, Domestic=56671993, Worldwide=187733202, Movie_id=36809}";
 
-        int a =3 ;
-        System.out.println(a%3==0);
+        // Primary key'ler biliniyor
+        String primaryKey1 = "CustomerID";
+        String primaryKey2 = "ShipperID";
+        String primaryKey3 = "earning_id";
 
+        // Primary key'i çıkarmak için fonksiyon çağrıları
+        System.out.println(extractPrimaryKey(selectedRow1, primaryKey1));
+        System.out.println(extractPrimaryKey(selectedRow2, primaryKey2));
+        System.out.println(extractPrimaryKey(selectedRow3, primaryKey3));
+    }
 
+    public static String extractPrimaryKey(String row, String primaryKey) {
+        int startIndex = row.indexOf(primaryKey + "=");
+        if (startIndex != -1) {
+            int endIndex = row.indexOf(",", startIndex);
+            if (endIndex == -1) {
+                endIndex = row.indexOf("}", startIndex); // Eğer bu key sondaysa
+            }
+            return "primary key = " + row.substring(startIndex + primaryKey.length() + 1, endIndex);
+        }
+        return "Primary key bulunamadı";
+    }
+
+}
 
 
         //
@@ -165,8 +190,7 @@ public class TestClass  {
 //                findPrimaryKey(connection, tableName);
 //            } catch (SQLException e) {
 //                e.printStackTrace();
-    }
-}
+
 
 //        public static void findPrimaryKey(Connection connection, String tableName) throws SQLException {
 //            DatabaseMetaData metaData = connection.getMetaData();

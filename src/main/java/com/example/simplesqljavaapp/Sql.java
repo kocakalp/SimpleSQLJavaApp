@@ -265,7 +265,6 @@ public class Sql {
 
         String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
         String primaryKeyColumn=null;
-
         try (Connection connection = DriverManager.getConnection(fullUrl)) {
             if (connection != null) {
                 System.out.println("Connection established successfully.");
@@ -277,60 +276,24 @@ public class Sql {
                         System.out.println("Primary Key Column: " + primaryKeyColumn);
                     }
                 }
-
                 String selectedRowString = selectedRow.toString();
 //        PreparedStatement st = connection.prepareStatement("DELETE FROM Table WHERE name = '" + name + "';");
-
-
-                //Eğer Primary key en sonda ise primary key ve değerini çıkarır
-                String c = null;
-                int startIndex = selectedRowString.indexOf(primaryKeyColumn);
-                int endIndex = selectedRowString.indexOf("}");
-                if (startIndex > 0 && endIndex > startIndex) {
-                    c = selectedRowString.substring(startIndex, endIndex);
-                    System.out.println(c);
-                } else {
-                    System.out.println("Value not found");
+                int endIndex=0;
+                int startIndex = selectedRowString.indexOf(primaryKeyColumn + "=");
+                if(startIndex != -1) {
+                     endIndex =selectedRowString.indexOf(",", startIndex);
+                    if (endIndex == -1) {
+                        endIndex = selectedRowString.indexOf("}", startIndex); //primarykey'in sonda olma durumu için
+                    }
                 }
+                if(table_name != null) {
+                    System.out.println("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + primaryKeyColumn +" = " + "'"
+                            + selectedRowString.substring(startIndex + primaryKeyColumn.length() + 1, endIndex) + "'" + ";");
 
-                //Eğer Primary key'in son dışında olma durumları için
-                String e =null;
-                int startIndex2 = selectedRowString.indexOf(primaryKeyColumn);
-                int endIndex2 = selectedRowString.indexOf(",");
-                if (startIndex2 > 0 && endIndex2 > startIndex2) {
-                    c = selectedRowString.substring(startIndex2, endIndex2);
-                    System.out.println(c);
-                } else {
-                    System.out.println("Value not found");
+                    PreparedStatement st = connection.prepareStatement("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " +
+                            primaryKeyColumn +" = " + "'"+ selectedRowString.substring(startIndex + primaryKeyColumn.length() + 1, endIndex) + "'" + ";");
+                    st.executeUpdate();
                 }
-
-
-
-
-
-
-//                String d=null;
-//                int startIndex2 = selectedRowString.indexOf("=") + 1;
-//                int endIndex2 = selectedRowString.indexOf(",");
-//                if (startIndex2 > 0 && endIndex2 > startIndex2) {
-//                    String result = selectedRowString.substring(startIndex2, endIndex2);
-//                    d = result;
-//                    System.out.println(d);
-//                } else {
-//                    System.out.println("Value not found");
-//                }
-//
-//
-//
-//
-//
-//
-//                if(table_name != null) {
-//                    System.out.println("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
-//                    PreparedStatement st = connection.prepareStatement("DELETE FROM "+ database_name + ".[dbo]." + table_name + " WHERE " + c + "'"+ d + "'" + ";");
-//                    st.executeUpdate();
-//                }
-
             } else {
                 System.out.println("Failed to establish connection.");
             }
@@ -340,12 +303,6 @@ public class Sql {
             System.out.println("SQL State: " + e.getSQLState());
             e.printStackTrace();
         }
-
-
-
-
-
-
         return null;
     }
 

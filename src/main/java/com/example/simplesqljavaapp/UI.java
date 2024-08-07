@@ -20,6 +20,7 @@ public class UI extends Application {
         HBox buttonHbox = new HBox();
         VBox tableViewVBox = new VBox();
         VBox tableViewVBoxSearch = new VBox();
+        VBox tableViewVBoxDelete = new VBox();
         VBox textfieldVBox = new VBox();
         VBox updateVBox = new VBox();
         Sql a= new Sql();
@@ -59,6 +60,7 @@ public class UI extends Application {
                 textfieldVBox.getChildren().clear();
                 tableViewVBoxSearch.getChildren().clear();
                 updateVBox.getChildren().clear();
+                tableViewVBoxDelete.getChildren().clear();
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
                 tableView.getItems().clear();
@@ -78,6 +80,15 @@ public class UI extends Application {
 //            System.out.println(a.getSelectedRow() + " BUTTON"); //Selected rowu basıyor
             if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
                 a.deleteData(databaseComboBox.getValue(), tableComboBox.getValue());
+                tableViewVBoxDelete.getChildren().clear();
+                tableViewVBoxSearch.getChildren().clear();
+                tableViewVBox.getChildren().clear();
+                TableView<Map<String, Object>> tableViewDeleted = new TableView<>();
+                tableViewDeleted.getItems().clear();
+                tableViewDeleted = a.getData(databaseComboBox.getValue(), tableComboBox.getValue());
+                tableViewDeleted.refresh();
+                tableViewVBoxDelete.getChildren().add(tableViewDeleted);
+
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Unable to delete");
@@ -159,6 +170,7 @@ public class UI extends Application {
             if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
                 System.out.println(searchLabel.getCharacters());
                 tableViewVBox.getChildren().clear();
+                tableViewVBoxDelete.getChildren().clear();
                 TableView<Map<String, Object>> tableViewSearch = new TableView<>();
                 tableViewSearch.getItems().clear();
                 tableViewVBoxSearch.getChildren().clear();
@@ -172,8 +184,6 @@ public class UI extends Application {
                 alert2.setContentText("Please select a table.\n");
                 alert2.showAndWait();
             }
-
-
         });
 
 
@@ -184,7 +194,7 @@ public class UI extends Application {
 
 
 
-        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox, tableViewVBoxSearch);
+        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox, tableViewVBoxSearch, tableViewVBoxDelete);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SimpleSQLJavaApp");
         stage.getIcons().add(new Image("/view.gif"));
