@@ -19,6 +19,7 @@ public class UI extends Application {
         VBox maninBox = new VBox();
         HBox buttonHbox = new HBox();
         VBox tableViewVBox = new VBox();
+        VBox tableViewVBoxSearch = new VBox();
         VBox textfieldVBox = new VBox();
         VBox updateVBox = new VBox();
         Sql a= new Sql();
@@ -56,6 +57,7 @@ public class UI extends Application {
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
                 textfieldVBox.getChildren().clear();
+                tableViewVBoxSearch.getChildren().clear();
                 updateVBox.getChildren().clear();
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
@@ -151,9 +153,26 @@ public class UI extends Application {
             }
         });
 
-        searchButton.setOnAction(e ->{
 
-            System.out.println(searchLabel.getCharacters());
+
+        searchButton.setOnAction(e ->{
+            if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
+                System.out.println(searchLabel.getCharacters());
+                tableViewVBox.getChildren().clear();
+                TableView<Map<String, Object>> tableViewSearch = new TableView<>();
+                tableViewSearch.getItems().clear();
+                tableViewVBoxSearch.getChildren().clear();
+                tableViewSearch = a.getSearchedData(databaseComboBox.getValue(), tableComboBox.getValue(), searchLabel.getCharacters().toString());
+                tableViewSearch.refresh();
+                tableViewVBoxSearch.getChildren().add(tableViewSearch);
+            } else {
+                Alert alert2 = new Alert(Alert.AlertType.WARNING);
+                alert2.setTitle("Unable to search");
+                alert2.setHeaderText(null);
+                alert2.setContentText("Please select a table.\n");
+                alert2.showAndWait();
+            }
+
 
         });
 
@@ -165,7 +184,7 @@ public class UI extends Application {
 
 
 
-        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox);
+        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox, tableViewVBoxSearch);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SimpleSQLJavaApp");
         stage.getIcons().add(new Image("/view.gif"));

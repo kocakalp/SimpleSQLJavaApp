@@ -141,16 +141,68 @@ public class Sql {
         return tableView;
     }
 
-    public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name) {
+    public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name, String searched) {
         if (selectedRow != null && !selectedRow.isEmpty()) {
             selectedRow.clear();
         }
-
+        String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
         TableView<Map<String, Object>> tableViewSearched = new TableView<>();
         ObservableList<Map<String, Object>> observableList = FXCollections.observableArrayList();
 
-        try (Connection connection = DriverManager.getConnection(URL)) {
+        try (Connection connection = DriverManager.getConnection(fullUrl)) {
+            System.out.println("Connection established successfully.");
+            Statement stmt = connection.createStatement();
 
+            if(table_name != null) {
+//                ResultSet sql = stmt.executeQuery("SELECT * FROM " + database_name +".[dbo]."+ table_name);
+
+                ResultSet sql = stmt.executeQuery("DECLARE @TableName nvarchar(256) = '" + table_name + "';\n" +
+                        "DECLARE @Find nvarchar(50) = '" + searched + "';\n" +
+                        "\n" +
+                        "DECLARE @sql nvarchar(max) = '';\n" +
+                        "\n" +
+                        "-- Generate the dynamic SQL for filtering\n" +
+                        "SELECT @sql = @sql + \n" +
+                        "    CASE \n" +
+                        "        WHEN @sql = '' THEN ''\n" +
+                        "        ELSE '+ '\n" +
+                        "    END + 'CONVERT(nvarchar(max), ISNULL(' + cols.COLUMN_NAME + ', '''')) COLLATE DATABASE_DEFAULT '\n" +
+                        "FROM INFORMATION_SCHEMA.COLUMNS cols\n" +
+                        "WHERE cols.TABLE_NAME = @TableName\n" +
+                        "--AND cols.COLUMN_NAME IN ('genre_id', 'genre', 'Movie_id');\n" +
+                        "\n" +
+                        "-- Construct the final SQL query\n" +
+                        "SELECT @sql = 'SELECT TOP (1000) * FROM ' + @TableName + ' WHERE ' + @sql + ' LIKE ''%' + @Find + '%''';\n" +
+                        "\n" +
+                        "-- Execute the dynamic SQL\n" +
+                        "EXEC(@sql);\n");
+
+                ResultSetMetaData rsMetaData = sql.getMetaData();
+                int count = rsMetaData.getColumnCount();
+                for(int i = 1; i<=count; i++) {
+                    String columnName = rsMetaData.getColumnName(i);
+                    TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
+                    column.setPrefWidth(100);
+                    column.setResizable(false);
+                    column.setReorderable(false);
+                    column.setSortable(false);
+                    column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnName)));
+                    tableViewSearched.getColumns().add(column);
+//                        System.out.println(tableView.getSelectionModel().selectedItemProperty());
+                }
+                while (sql.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    for (int i = 1; i <= count; i++) {
+                        String columnName = rsMetaData.getColumnName(i);
+                        row.put(columnName, sql.getObject(i));
+                    }
+                    observableList.add(row);
+                }
+                tableViewSearched.setItems(observableList);
+
+            } else {
+            System.out.println("Failed to establish connection.");
+        }
 
 
 
