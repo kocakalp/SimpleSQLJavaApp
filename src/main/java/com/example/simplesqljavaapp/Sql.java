@@ -80,7 +80,6 @@ public class Sql {
         if (selectedRow != null && !selectedRow.isEmpty()) {
             selectedRow.clear();
         }
-
 //        System.out.println(selectedRow); //Selected rowu basıyor
         TableView<Map<String, Object>> tableView = new TableView<>();
         ObservableList<Map<String, Object>> observableList = FXCollections.observableArrayList();
@@ -123,7 +122,6 @@ public class Sql {
                     }
                     tableView.setItems(observableList);
                 }
-
             } else {
                 System.out.println("Failed to establish connection.");
             }
@@ -143,7 +141,35 @@ public class Sql {
         return tableView;
     }
 
+    public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name) {
+        if (selectedRow != null && !selectedRow.isEmpty()) {
+            selectedRow.clear();
+        }
 
+        TableView<Map<String, Object>> tableViewSearched = new TableView<>();
+        ObservableList<Map<String, Object>> observableList = FXCollections.observableArrayList();
+
+        try (Connection connection = DriverManager.getConnection(URL)) {
+
+
+
+
+
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+        tableViewSearched.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                selectedRow = newSelection;
+                String a = selectedRow.toString();
+                System.out.println("Selected row: " + selectedRow);
+            }
+        });
+        return tableViewSearched;
+    }
 
 
 
@@ -155,7 +181,6 @@ public class Sql {
 
     public ArrayList<String> getColumnNames(String database_name, String table_name){
         ArrayList<String> columnnamesArraylist= new ArrayList<>();
-
         try (Connection connection = DriverManager.getConnection(URL)) {
             if (connection != null) {
                 System.out.println("Connection established successfully.");
@@ -178,7 +203,6 @@ public class Sql {
             System.out.println("SQL State: " + e.getSQLState());
             e.printStackTrace();
         }
-
         return columnnamesArraylist;
     }
 
@@ -309,3 +333,20 @@ public class Sql {
 //"jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=Try;integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
 
 
+
+
+
+
+
+
+
+
+/*
+* YARIN YAPILACAKLAR
+* UPDATE KISMI YENİ TABLE SEÇİNCE VE YA YENİ DATA BASE SEÇİNCE GÜNCELLENMİYOR////////////
+* UPDATE KISMINA UPDATE TUŞU
+* DELETE METHODUNUN PRİMARY KEYİNİ SQL KODUNA ÇIKARMASI LAZIM
+* DELETE OLUNCA TEABLEVİEW'İN GÜNCELLENMESİ LAZIM
+* CREATE KSIMINDA TEXTFIELD LER 3 LÜ SATIRLAR HALİNDE ALT ALT SIRALANSIN
+* CRATE KSIMI İÇİN CRATE TUŞU
+* */

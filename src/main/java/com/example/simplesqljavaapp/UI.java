@@ -25,9 +25,11 @@ public class UI extends Application {
 
         Button createButton = new Button("Create");
         Button deleteButton = new Button("Delete");
-        Button selectButton = new Button("Select");
+        TextField searchLabel = new TextField();
+        searchLabel.setPromptText("Search");
+        Button searchButton = new Button("Search");
         Button updateButton = new Button("Update");
-        buttonHbox.getChildren().addAll(createButton, deleteButton, selectButton, updateButton);
+        buttonHbox.getChildren().addAll(createButton, deleteButton, updateButton, searchLabel, searchButton);
 
 
         Font font_30 = new Font(30);
@@ -54,6 +56,7 @@ public class UI extends Application {
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
                 textfieldVBox.getChildren().clear();
+                updateVBox.getChildren().clear();
                 tableViewVBox.getChildren().clear();
                 TableView<Map<String, Object>> tableView = new TableView<>();
                 tableView.getItems().clear();
@@ -86,18 +89,23 @@ public class UI extends Application {
 
         Scene updateScene = new Scene(updateVBox, 320, 240);
         Stage updateStage = new Stage();
+        updateStage.alwaysOnTopProperty();
         updateButton.setOnAction(e -> {
-            if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {
+            if (a.getSelectedRow() != null && !a.getSelectedRow().isEmpty()) {// Eğer seçili bir değer varsa
                     updateStage.setTitle("SQL Update Screen");
                     updateStage.getIcons().add(new Image("/dinodino.png"));
+
                     if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
                         updateVBox.getChildren().clear();
                         TextField field = new TextField(a.getSelectedRow().toString());
                         updateVBox.getChildren().add(field);
+                        Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
+                        primarkeyLabel.setFont(font_30);
+                        updateVBox.getChildren().add(primarkeyLabel);
+                    } else {
+                        updateVBox.getChildren().clear();
                     }
-                    Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
-                    primarkeyLabel.setFont(font_30);
-                    updateVBox.getChildren().add(primarkeyLabel);
+
                     updateStage.setScene(updateScene);
                     updateStage.show();
 
@@ -112,7 +120,8 @@ public class UI extends Application {
 
         Scene createScene = new Scene(textfieldVBox, 320, 240);
         Stage createStage = new Stage();
-        createButton.setOnAction(e ->{
+        createStage.alwaysOnTopProperty();
+        createButton.setOnAction(e -> {
             if (tableComboBox.getValue()!=null) {// tableComboBox'un içinde değer varsa
                 createStage.setTitle("SQL Create Screen");
                 createStage.getIcons().add(new Image("/sailing.gif"));
@@ -121,9 +130,14 @@ public class UI extends Application {
                     textfieldVBox.getChildren().clear();
                     ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
                     for (String i: columnNamesArraylist) {
-                        TextField data_4 = new TextField(i);
+                        TextField data_4 = new TextField();
+                        data_4.setPromptText(i);
+                        //data_4.cursorProperty().unbind();
                         textfieldVBox.getChildren().add(data_4);
                     }
+                    Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
+                    primarkeyLabel.setFont(font_30);
+                    textfieldVBox.getChildren().add(primarkeyLabel);
                 }
                 createStage.setScene(createScene);
                 createStage.show();
@@ -137,6 +151,13 @@ public class UI extends Application {
             }
         });
 
+        searchButton.setOnAction(e ->{
+
+            System.out.println(searchLabel.getCharacters());
+
+        });
+
+
 
 
 
@@ -146,7 +167,7 @@ public class UI extends Application {
 
         maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox);
         Scene scene = new Scene(maninBox, 320, 240);
-        stage.setTitle("SQL DATA");
+        stage.setTitle("SimpleSQLJavaApp");
         stage.getIcons().add(new Image("/view.gif"));
         stage.setMaximized(true);
         stage.setScene(scene);
