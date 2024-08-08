@@ -145,38 +145,89 @@ public class Hello extends Application {
         }
 }    */
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Random;
+
 public class TestClass {
 
-
     public static void main(String[] args) {
-        String selectedRow1 = "{Address=Obere Str. 57, PostalCode=12209, Country=Germany, CustomerID=asfaıhfıa, CustomerName=Alfreds Futterkiste, City=Berlin, ContactName=Maria Anders}";
-        String selectedRow2 = "{ShipperName=United Package, Phone=(503) 555-3199, ShipperID=2}";
-        String selectedRow3 = "{earning_id=1, Domestic=56671993, Worldwide=187733202, Movie_id=36809}";
+        Random r = new Random();
+        int randomInt = r.nextInt(1, 15); // Randomly select a table index between 1 and 15
+        String fileContent = "";
+        FileReader fr = null;
 
-        // Primary key'ler biliniyor
-        String primaryKey1 = "CustomerID";
-        String primaryKey2 = "ShipperID";
-        String primaryKey3 = "earning_id";
+        try {
+            fr = new FileReader("C:\\Users\\Stajyer\\Desktop\\SimpleSQLJavaApp\\src\\main\\resources\\TableExamples.txt");
 
-        // Primary key'i çıkarmak için fonksiyon çağrıları
-        System.out.println(extractPrimaryKey(selectedRow1, primaryKey1));
-        System.out.println(extractPrimaryKey(selectedRow2, primaryKey2));
-        System.out.println(extractPrimaryKey(selectedRow3, primaryKey3));
-    }
-
-    public static String extractPrimaryKey(String row, String primaryKey) {
-        int startIndex = row.indexOf(primaryKey + "=");
-        if (startIndex != -1) {
-            int endIndex = row.indexOf(",", startIndex);
-            if (endIndex == -1) {
-                endIndex = row.indexOf("}", startIndex); // Eğer bu key sondaysa
+            // Read the entire file content
+            int ch;
+            StringBuilder contentBuilder = new StringBuilder();
+            while ((ch = fr.read()) != -1) {
+                contentBuilder.append((char) ch);
             }
-            return "primary key = " + row.substring(startIndex + primaryKey.length() + 1, endIndex);
+            fileContent = contentBuilder.toString();
+        } catch (FileNotFoundException fe) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("Error reading the file");
+        } finally {
+            if (fr != null) {
+                try {
+                    fr.close();
+                } catch (IOException e) {
+                    System.out.println("Error closing the file");
+                }
+            }
         }
-        return "Primary key bulunamadı";
-    }
 
+        // Split the content by the table markers
+        String[] tables = fileContent.split("(?=-\\d+)");
+
+        // Print the randomly selected table without the leading dash and number
+        if (randomInt < tables.length) {
+            String selectedTable = tables[randomInt].trim();
+            selectedTable = selectedTable.replaceFirst("^-\\d+", "").trim(); // Remove leading dash and number
+            System.out.println(selectedTable);
+        }
+    }
 }
+
+
+
+
+
+
+    //    public static void main(String[] args) {
+//        String selectedRow1 = "{Address=Obere Str. 57, PostalCode=12209, Country=Germany, CustomerID=asfaıhfıa, CustomerName=Alfreds Futterkiste, City=Berlin, ContactName=Maria Anders}";
+//        String selectedRow2 = "{ShipperName=United Package, Phone=(503) 555-3199, ShipperID=2}";
+//        String selectedRow3 = "{earning_id=1, Domestic=56671993, Worldwide=187733202, Movie_id=36809}";
+//
+//
+//        String primaryKey1 = "CustomerID";
+//        String primaryKey2 = "ShipperID";
+//        String primaryKey3 = "earning_id";
+//
+//
+//        System.out.println(extractPrimaryKey(selectedRow1, primaryKey1));
+//        System.out.println(extractPrimaryKey(selectedRow2, primaryKey2));
+//        System.out.println(extractPrimaryKey(selectedRow3, primaryKey3));
+//    }
+//
+//    public static String extractPrimaryKey(String row, String primaryKey) {
+//        int startIndex = row.indexOf(primaryKey + "=");
+//        if (startIndex != -1) {
+//            int endIndex = row.indexOf(",", startIndex);
+//            if (endIndex == -1) {
+//                endIndex = row.indexOf("}", startIndex); // Eğer bu key sondaysa
+//            }
+//            return "primary key = " + row.substring(startIndex + primaryKey.length() + 1, endIndex);
+//        }
+//        return "Primary key bulunamadı";
+//    }
+
+
 
 
         //

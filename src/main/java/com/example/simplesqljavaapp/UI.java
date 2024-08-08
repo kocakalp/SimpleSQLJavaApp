@@ -4,13 +4,18 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 
 public class UI extends Application {
@@ -21,17 +26,20 @@ public class UI extends Application {
         VBox tableViewVBox = new VBox();
         VBox tableViewVBoxSearch = new VBox();
         VBox tableViewVBoxDelete = new VBox();
-        VBox textfieldVBox = new VBox();
+        VBox TextAreaVBoxCreate = new VBox();
         VBox updateVBox = new VBox();
         Sql a= new Sql();
 
-        Button createButton = new Button("Create");
+        GridPane insertGripPane = new GridPane(10,10);
+
+        Button insertButton = new Button("Insert");
         Button deleteButton = new Button("Delete");
         TextField searchLabel = new TextField();
         searchLabel.setPromptText("Search");
         Button searchButton = new Button("Search");
         Button updateButton = new Button("Update");
-        buttonHbox.getChildren().addAll(createButton, deleteButton, updateButton, searchLabel, searchButton);
+        Button createButton = new Button("Create");
+        buttonHbox.getChildren().addAll(insertButton, deleteButton, updateButton, createButton, searchLabel, searchButton);
 
 
         Font font_30 = new Font(30);
@@ -57,7 +65,7 @@ public class UI extends Application {
             tableComboBox.getItems().clear();
             tableComboBox.getItems().addAll(a.getTableNames(databaseComboBox.getValue()));
             tableComboBox.setOnAction(b -> {
-                textfieldVBox.getChildren().clear();
+                insertGripPane.getChildren().clear();
                 tableViewVBoxSearch.getChildren().clear();
                 updateVBox.getChildren().clear();
                 tableViewVBoxDelete.getChildren().clear();
@@ -131,33 +139,50 @@ public class UI extends Application {
             }
         });
 
-        Scene createScene = new Scene(textfieldVBox, 320, 240);
-        Stage createStage = new Stage();
-        createStage.alwaysOnTopProperty();
-        createButton.setOnAction(e -> {
+        Scene insertScene = new Scene(insertGripPane, 320, 240);
+        Stage insertStage = new Stage();
+        insertStage.alwaysOnTopProperty();
+
+        int numColumns = 3;
+        insertButton.setOnAction(e -> {
             if (tableComboBox.getValue()!=null) {// tableComboBox'un içinde değer varsa
-                createStage.setTitle("SQL Create Screen");
-                createStage.getIcons().add(new Image("/sailing.gif"));
+                insertStage.setTitle("SQL Insert Screen");
+                insertStage.getIcons().add(new Image("/sailing.gif"));
 
                 if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
-                    textfieldVBox.getChildren().clear();
+                    insertGripPane.getChildren().clear();
                     ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
-                    for (String i: columnNamesArraylist) {
+
+                    int row = 0;
+                    for (int i = 0; i < columnNamesArraylist.size(); i++) {
                         TextField data_4 = new TextField();
-                        data_4.setPromptText(i);
-                        //data_4.cursorProperty().unbind();
-                        textfieldVBox.getChildren().add(data_4);
+                        data_4.setPromptText(columnNamesArraylist.get(i));
+                        int column = i % numColumns;
+                        if (column == 0 && i > 0) {
+                            row++;
+                        }
+                        insertGripPane.add(data_4, column, row);
                     }
                     Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                     primarkeyLabel.setFont(font_30);
-                    textfieldVBox.getChildren().add(primarkeyLabel);
+                    Button insertButton2 = new Button("Insert");
+                    insertGripPane.add(primarkeyLabel, 0,row +1, numColumns,1);
+
+                    insertButton2.setOnAction(b -> {
+
+                    });
+
+
+
+
+                    insertGripPane.add(insertButton2,0,row+2, numColumns,1);
                 }
-                createStage.setScene(createScene);
-                createStage.show();
+                insertStage.setScene(insertScene);
+                insertStage.show();
 
             } else {
                 Alert alert1 = new Alert(Alert.AlertType.WARNING);
-                alert1.setTitle("Unable to create");
+                alert1.setTitle("Unable to insert");
                 alert1.setHeaderText(null);
                 alert1.setContentText("Please select a table.\n");
                 alert1.showAndWait();
@@ -166,7 +191,7 @@ public class UI extends Application {
 
 
 
-        searchButton.setOnAction(e ->{
+        searchButton.setOnAction(e -> {
             if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
                 System.out.println(searchLabel.getCharacters());
                 tableViewVBox.getChildren().clear();
@@ -185,6 +210,84 @@ public class UI extends Application {
                 alert2.showAndWait();
             }
         });
+
+        Scene createScene = new Scene(TextAreaVBoxCreate, 320, 240);
+        Stage createStage = new Stage();
+        createButton.setOnAction(e -> {
+            //System.out.println();
+            if(databaseComboBox.getValue()!=null && !databaseComboBox.getValue().isEmpty()) {
+                createStage.setTitle("SQL Create Screen");
+                createStage.getIcons().add(new Image("/climbing.gif"));
+                TextAreaVBoxCreate.getChildren().clear();
+                /////////////////////////////////////
+                Random r = new Random();
+                int randomInt = r.nextInt(1, 15);
+                String fileContent = "";
+                FileReader fr = null;
+
+                try {
+                    fr = new FileReader("C:\\Users\\Stajyer\\Desktop\\SimpleSQLJavaApp\\src\\main\\resources\\TableExamples.txt");
+                    //Path is not dynamic
+                    
+                    int ch;
+                    StringBuilder contentBuilder = new StringBuilder();
+                    while ((ch = fr.read()) != -1) {
+                        contentBuilder.append((char) ch);
+                    }
+                    fileContent = contentBuilder.toString();
+                } catch (FileNotFoundException fe) {
+                    System.out.println("File not found");
+                } catch (IOException x) {
+                    System.out.println("Error reading the file");
+                } finally {
+                    if (fr != null) {
+                        try {
+                            fr.close();
+                        } catch (IOException x) {
+                            System.out.println("Error closing the file");
+                        }
+                    }
+                }
+                String[] tables = fileContent.split("(?=-\\d+)");
+                String selectedTable = null;
+                if (randomInt < tables.length) {
+                    selectedTable = tables[randomInt].trim();
+                    selectedTable = selectedTable.replaceFirst("^-\\d+", "").trim();
+                }
+                /////////////////////////////////////
+                TextArea createTextArea = new TextArea(selectedTable);
+                Button createButton2 = new Button("Create");
+                TextAreaVBoxCreate.getChildren().addAll(createTextArea, createButton2);
+                createButton2.setOnAction(b -> {
+
+                  boolean created = a.createTable(databaseComboBox.getValue(), createTextArea.getText());
+                  if(created) {
+                      createStage.close();
+                      Alert alert3 = new Alert(Alert.AlertType.CONFIRMATION);
+                      alert3.setTitle("Created successfully");
+                      alert3.setHeaderText(null);
+                      alert3.setContentText("Created successfully.\n");
+                      alert3.showAndWait();
+                      //databaseComboBox.getValue().refresh();
+                  } else {
+                      Alert alert4 = new Alert(Alert.AlertType.WARNING);
+                      alert4.setTitle("Unable to create");
+                      alert4.setHeaderText(null);
+                      alert4.setContentText("An Error Accured.\n");
+                      alert4.showAndWait();
+                  }
+                });
+
+                createStage.setScene(createScene);
+                createStage.show();
+            } else {
+                Alert alert5 = new Alert(Alert.AlertType.WARNING);
+                alert5.setTitle("Unable to create");
+                alert5.setHeaderText(null);
+                alert5.setContentText("Please select a database.\n");
+                alert5.showAndWait();
+            }
+         });
 
 
 

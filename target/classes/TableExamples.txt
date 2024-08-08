@@ -1,0 +1,81 @@
+-1CREATE TABLE CourseRegistrations (
+    StudentID INT,
+    CourseID INT,
+    RegistrationDate DATE,
+    PRIMARY KEY (StudentID, CourseID)
+);-2CREATE TABLE Departments (
+    DepartmentID INT PRIMARY KEY IDENTITY(1,1),
+    DepartmentName NVARCHAR(100) NOT NULL,
+    DepartmentCode NVARCHAR(10) NOT NULL UNIQUE
+);-3CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Email NVARCHAR(100),
+    HireDate DATE,
+    Salary INT
+);-4CREATE TABLE Students (
+    StudentID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    BirthDate DATE,
+    GradeLevel INT
+);-5CREATE TABLE DepartmentManagers (
+    DepartmentID INT PRIMARY KEY,
+    ManagerID INT
+);-6CREATE TABLE BookLoans (
+    LoanID INT PRIMARY KEY IDENTITY(1,1),
+    BookID INT,
+    StudentID INT,
+    LoanDate DATE,
+    DueDate DATE,
+    ReturnDate DATE
+);-7CREATE TABLE LibraryBooks (
+    BookID INT PRIMARY KEY IDENTITY(1,1),
+    Title NVARCHAR(200) NOT NULL,
+    Author NVARCHAR(100),
+    ISBN NVARCHAR(20) UNIQUE,
+    PublishedYear INT,
+    AvailableCopies INT
+);-8CREATE TABLE EmployeeProjects (
+    EmployeeID INT,
+    ProjectID INT,
+    AssignmentDate DATE,
+    Role NVARCHAR(50)
+);-9CREATE TABLE Projects (
+    ProjectID INT PRIMARY KEY IDENTITY(1,1),
+    ProjectName NVARCHAR(100) NOT NULL,
+    StartDate DATE,
+    EndDate DATE,
+    Budget INT,
+    DepartmentID INT
+);-10CREATE TABLE DepartmentBudgets (
+    BudgetID INT PRIMARY KEY IDENTITY(1,1),
+    DepartmentID INT,
+    FiscalYear INT,
+    BudgetAmount INT
+);-11CREATE TABLE Attendance (
+    AttendanceID INT PRIMARY KEY IDENTITY(1,1),
+    StudentID INT,
+    CourseID INT,
+    AttendanceDate DATE,
+    Status NVARCHAR(20)
+);-12CREATE TABLE ClassSchedules (
+    ScheduleID INT PRIMARY KEY IDENTITY(1,1),
+    CourseID INT,
+    InstructorID INT,
+    ClassRoom NVARCHAR(50),
+    ClassTime TIME
+);-13CREATE TABLE Instructors (
+    InstructorID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Email NVARCHAR(100),
+    HireDate DATE,
+    DepartmentID INT
+);-14CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY IDENTITY(1,1),
+    CourseName NVARCHAR(100) NOT NULL,
+    Credits INT NOT NULL,
+    DepartmentID INT
+);-15

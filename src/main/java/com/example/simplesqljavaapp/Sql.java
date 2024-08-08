@@ -334,6 +334,36 @@ public class Sql {
         return holder;
     }
 
+    public boolean createTable(String database_name, String create) {
+        String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
+
+        try (Connection connection = DriverManager.getConnection(fullUrl)) {
+            if (connection != null) {
+                System.out.println("Connection established successfully.");
+                Statement stmt = connection.createStatement();
+
+                if(database_name != null) {
+                    int a = stmt.executeUpdate(create);
+                    if (a == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                System.out.println("Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
     public Map<String, Object> getSelectedRow() {
         return selectedRow;
     }
@@ -351,11 +381,20 @@ public class Sql {
 
 
 /*
-* YARIN YAPILACAKLAR
-* UPDATE KISMI YENİ TABLE SEÇİNCE VE YA YENİ DATA BASE SEÇİNCE GÜNCELLENMİYOR////////////
-* UPDATE KISMINA UPDATE TUŞU
-* DELETE METHODUNUN PRİMARY KEYİNİ SQL KODUNA ÇIKARMASI LAZIM
-* DELETE OLUNCA TEABLEVİEW'İN GÜNCELLENMESİ LAZIM
-* CREATE KSIMINDA TEXTFIELD LER 3 LÜ SATIRLAR HALİNDE ALT ALT SIRALANSIN
-* CRATE KSIMI İÇİN CRATE TUŞU
+*                                            TO-DO
+*
+*                                              7/8/24
+* ////////////UPDATE KISMI YENİ TABLE SEÇİNCE VE YA YENİ DATA BASE SEÇİNCE GÜNCELLENMİYOR////////////
+* ////////////DELETE METHODUNUN PRİMARY KEYİNİ SQL KODUNA ÇIKARMASI LAZIM////////////
+* ////////////DELETE OLUNCA TEABLEVİEW'İN GÜNCELLENMESİ LAZIM////////////
+* ////////////INSERT KSIMINDA TEXTFIELD LER 3 LÜ SATIRLAR HALİNDE ALT ALT SIRALANSIN////////////
+*
+*
+*
+
+* DELETE TABLODA PRIMARY KEY YOKSA HATTA ÇIKARIYOR(SILME IŞLEMI GERÇEKLEŞMIYOR)
+* DELETE SILINECEK ROW'UN BULUNDUĞU TABLE'IN BAŞKA TABLELAR'LA BAĞLANTISI VARSA HATTA ÇIKARIYOR
+* SEARCH INTEGER DEĞERLERDEN BAZILARINDA HATTA ÇIKARIYOR(GALIBA BIR TABLE DA FULL INTEGER VARSA)
+* EĞER SEARCH YAPIP DELETE IŞLEMI YAPILIRSA BÜTÜN TABLE GÖZÜKÜYOR
+* CREATE KISIMINDA FILE PATHI DINAMIK OLARAK ALMIYOR
 * */
