@@ -1,14 +1,17 @@
 package com.example.simplesqljavaapp;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -39,6 +42,10 @@ public class UI extends Application {
         Button searchButton = new Button("Search");
         Button updateButton = new Button("Update");
         Button createButton = new Button("Create");
+        Button crudButton = new Button("CRUD");
+        crudButton.setPrefWidth(50);
+        crudButton.setPrefHeight(50);
+
         buttonHbox.getChildren().addAll(insertButton, deleteButton, updateButton, createButton, searchLabel, searchButton);
 
 
@@ -55,6 +62,13 @@ public class UI extends Application {
         ComboBox<String> tableComboBox = new ComboBox<>();
         HBox labelHbox_2 = new HBox();
         labelHbox_2.getChildren().addAll(tableLabel,tableComboBox);
+
+
+        VBox newVBox = new VBox();
+        newVBox.getChildren().addAll(labelHbox_1, labelHbox_2);
+        HBox newHBox = new HBox();
+        newHBox.getChildren().addAll(newVBox, crudButton );
+
 
 
 
@@ -118,9 +132,14 @@ public class UI extends Application {
 
                     if(tableComboBox.getValue()!=null && !tableComboBox.getValue().isEmpty()) {
                         updateVBox.getChildren().clear();
-                        TextField field = new TextField(a.getSelectedRow().toString());
+                        String holder = a.getSelectedRow().toString();
+                       // String holder1 = a.getSelectedRowWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue());
+
+                        String result = holder.replace(",?\\s*"+a.getSelectedRowWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()),"").replaceAll("\\s{2,}", " ").trim();
+
+                        TextField field = new TextField(result);
                         updateVBox.getChildren().add(field);
-                        Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
+                        Label primarkeyLabel = new Label("Primary Key Column: " + a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                         primarkeyLabel.setFont(font_30);
                         updateVBox.getChildren().add(primarkeyLabel);
                     } else {
@@ -163,7 +182,7 @@ public class UI extends Application {
                         }
                         insertGripPane.add(data_4, column, row);
                     }
-                    Label primarkeyLabel = new Label(a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
+                    Label primarkeyLabel = new Label("Primary Key Column: " + a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                     primarkeyLabel.setFont(font_30);
                     Button insertButton2 = new Button("Insert");
                     insertGripPane.add(primarkeyLabel, 0,row +1, numColumns,1);
@@ -226,9 +245,7 @@ public class UI extends Application {
                 FileReader fr = null;
 
                 try {
-                    fr = new FileReader("C:\\Users\\Stajyer\\Desktop\\SimpleSQLJavaApp\\src\\main\\resources\\TableExamples.txt");
-                    //Path is not dynamic
-                    
+                    fr = new FileReader("C:\\Users\\Stajyer\\Desktop\\SimpleSQLJavaApp\\src\\main\\resources\\TableExamples.txt");//Path is not dynamic
                     int ch;
                     StringBuilder contentBuilder = new StringBuilder();
                     while ((ch = fr.read()) != -1) {
@@ -296,8 +313,26 @@ public class UI extends Application {
 
 
 
+        VBox vbox = new VBox();
+        crudButton.setOnAction(e -> {
 
-        maninBox.getChildren().addAll(labelHbox_1, labelHbox_2, buttonHbox, tableViewVBox, tableViewVBoxSearch, tableViewVBoxDelete);
+            newHBox.getChildren().clear();
+            buttonHbox.getChildren().clear();
+            tableViewVBox.getChildren().clear();
+            tableViewVBoxSearch.getChildren().clear();
+            tableViewVBoxDelete.getChildren().clear();
+            stage.setMaximized(true);
+            Image image = new Image(getClass().getResourceAsStream("/jumpscare.gif"),1616,868,false,false);
+            PauseTransition delay = new PauseTransition(Duration.millis(850));
+            delay.setOnFinished( event -> stage.close() );
+            delay.play();
+
+            ImageView imageView = new ImageView(image);
+            vbox.getChildren().add(imageView);
+
+           // stage.close();
+        });
+        maninBox.getChildren().addAll(newHBox, buttonHbox, tableViewVBox, tableViewVBoxSearch, tableViewVBoxDelete, vbox);
         Scene scene = new Scene(maninBox, 320, 240);
         stage.setTitle("SimpleSQLJavaApp");
         stage.getIcons().add(new Image("/view.gif"));

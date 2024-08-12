@@ -18,7 +18,8 @@ public class Sql {
     private final String URL_withoutdatabaseStart = "jdbc:sqlserver://stibrsnbim041\\SQLEXPRESS:1433;databaseName=";
     private final String URL_withoutdatabaseEnd =";integratedSecurity=true;encrypt=true;trustServerCertificate=true;";
     private Map<String, Object> selectedRow;
-
+    private Map<String, Object> selectedRowWithoutPrimaryKey;
+    private String primaryKeyColumn;
     public Sql() {
     }
 
@@ -64,15 +65,6 @@ public class Sql {
         }
         return tables;
     }
-
-
-
-
-
-
-
-
-
 
 
     public TableView<Map<String, Object>> getData(String database_name, String table_name) {
@@ -141,7 +133,86 @@ public class Sql {
         return tableView;
     }
 
-    public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name, String searched) {
+    public TableView<Map<String, Object>> getDataWithoutPrimaryKey(String database_name, String table_name) {
+
+        if (selectedRowWithoutPrimaryKey != null && !selectedRowWithoutPrimaryKey.isEmpty()) {
+            selectedRowWithoutPrimaryKey.clear();
+        }
+//        System.out.println(selectedRow); //Selected rowu basıyor
+        TableView<Map<String, Object>> tableView = new TableView<>();
+        ObservableList<Map<String, Object>> observableList = FXCollections.observableArrayList();
+
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            System.out.println("JDBC Driver loaded successfully.");
+        } catch (ClassNotFoundException e) {
+            System.out.println("JDBC Driver not found.");
+            e.printStackTrace();
+        }
+        try (Connection connection = DriverManager.getConnection(URL)) {
+            if (connection != null) {
+                System.out.println("Connection established successfully.");
+                Statement stmt = connection.createStatement();
+
+                if(table_name != null) {
+                    ResultSet sql = stmt.executeQuery("SELECT * FROM " + database_name +".[dbo]."+ table_name);
+                    System.out.println("SELECT * FROM " + database_name + ".[dbo]." + table_name);
+                    ResultSetMetaData rsMetaData = sql.getMetaData();
+                    int count = rsMetaData.getColumnCount();
+                    ////////////////////
+                    String from = null;
+                    ////////////////////
+                    for(int i = 1; i<=count; i++) {
+                        String columnName = rsMetaData.getColumnName(i);
+                        TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
+                        column.setPrefWidth(100);
+                        column.setResizable(false);
+                        column.setReorderable(false);
+                        column.setSortable(false);
+                        column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnName)));
+                        tableView.getColumns().add(column);
+//                        System.out.println(tableView.getSelectionModel().selectedItemProperty());
+                        ////////////////////
+
+                        if(columnName.equals(getPrimaryKey(database_name, table_name))) {
+                            from = columnName + ", " +  from;
+                        }
+
+                        ////////////////////
+                    }
+                    ////////////////////
+                    from.substring(0,from.length()-1);
+                    ////////////////////
+                    while (sql.next()) {
+                        Map<String, Object> row = new HashMap<>();
+                        for (int i = 1; i <= count; i++) {
+                            String columnName = rsMetaData.getColumnName(i);
+                            row.put(columnName, sql.getObject(i));
+                        }
+                        observableList.add(row);
+                    }
+                    tableView.setItems(observableList);
+                }
+            } else {
+                System.out.println("Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error connecting to the database.");
+            System.out.println("Error Code: " + e.getErrorCode());
+            System.out.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+        }
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                selectedRowWithoutPrimaryKey = newSelection;
+                String a = selectedRowWithoutPrimaryKey.toString();
+                System.out.println("Selected row without primary key: " + selectedRowWithoutPrimaryKey);
+            }
+        });
+        return tableView;
+    }
+
+        public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name, String searched) {
         if (selectedRow != null && !selectedRow.isEmpty()) {
             selectedRow.clear();
         }
@@ -309,7 +380,6 @@ public class Sql {
 
     public String getPrimaryKey(String database_name, String table_name)  {
         String fullUrl = URL_withoutdatabaseStart + database_name + URL_withoutdatabaseEnd;
-        String primaryKeyColumn = null;
         String holder = null;
         try (Connection connection = DriverManager.getConnection(fullUrl)) {
             if (connection != null) {
@@ -319,7 +389,7 @@ public class Sql {
                 try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, table_name)) {
                     while (primaryKeys.next()) {
                         primaryKeyColumn = primaryKeys.getString("COLUMN_NAME");
-                        holder =("Primary Key Column: " + primaryKeyColumn);
+                        holder =(primaryKeyColumn);
                     }
                 }
             } else {
@@ -366,6 +436,28 @@ public class Sql {
 
     public Map<String, Object> getSelectedRow() {
         return selectedRow;
+    }
+
+    public String getPrimaryKeyColumn() {
+        return primaryKeyColumn;
+    }
+
+    public String getSelectedRowWithoutPrimaryKey(String database_name, String table_name) {
+        String primary_key = getPrimaryKey(database_name,table_name);
+        String selectedRowString = selectedRow.toString();
+
+        int endIndex=0;
+        int startIndex = selectedRowString.indexOf(primary_key + "=");
+        if(startIndex != -1) {
+            endIndex =selectedRowString.indexOf(",", startIndex);
+            if (endIndex == -1) {
+                endIndex = selectedRowString.indexOf("}", startIndex); //primarykey'in sonda olma durumu için
+            }
+        }
+
+
+
+        return primary_key +" = " + selectedRowString.substring(startIndex + primary_key.length() + 1, endIndex);
     }
 }
 

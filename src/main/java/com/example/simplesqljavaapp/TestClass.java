@@ -153,44 +153,36 @@ import java.util.Random;
 public class TestClass {
 
     public static void main(String[] args) {
-        Random r = new Random();
-        int randomInt = r.nextInt(1, 15); // Randomly select a table index between 1 and 15
-        String fileContent = "";
-        FileReader fr = null;
+//        String str = "manchester united (with nice players)";
+//        String result = str.replace("united", "").replaceAll("\\s{2,}", " ").trim();
+//        System.out.println(result);
+//
+//
+//        String str2 = "Selected row: {earning_id=1, Domestic=56671993, Worldwide=187733202, Movie_id=36809}";
+//        String result2 = str.replace(", Worldwide=187733202", "").replaceAll("\\s{2,}", " ").trim();
+//        System.out.println(result2);
+//
+//        String str4 = "Selected row: {earning_id=1, Domestic=56671993, Worldwide=187733202, Movie_id=36809}";
+//        String result4 = str4.replaceAll(",?\\s*Worldwide=187733202", "").replaceAll("\\s{2,}", " ").trim();
+//        System.out.println(result4);
 
-        try {
-            fr = new FileReader("C:\\Users\\Stajyer\\Desktop\\SimpleSQLJavaApp\\src\\main\\resources\\TableExamples.txt");
+        String a = "hELLO tHERE,";
+        System.out.println(a.substring(0,a.length()-1));
 
-            // Read the entire file content
-            int ch;
-            StringBuilder contentBuilder = new StringBuilder();
-            while ((ch = fr.read()) != -1) {
-                contentBuilder.append((char) ch);
-            }
-            fileContent = contentBuilder.toString();
-        } catch (FileNotFoundException fe) {
-            System.out.println("File not found");
-        } catch (IOException e) {
-            System.out.println("Error reading the file");
-        } finally {
-            if (fr != null) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                    System.out.println("Error closing the file");
-                }
-            }
-        }
 
-        // Split the content by the table markers
-        String[] tables = fileContent.split("(?=-\\d+)");
 
-        // Print the randomly selected table without the leading dash and number
-        if (randomInt < tables.length) {
-            String selectedTable = tables[randomInt].trim();
-            selectedTable = selectedTable.replaceFirst("^-\\d+", "").trim(); // Remove leading dash and number
-            System.out.println(selectedTable);
-        }
+//
+//
+//
+//
+//
+//        String str3 = "manchester united (with nice players)";
+//        String result3 = str3.replace("(with nice players)", "").trim() + "csaf";
+//        System.out.println(result);
+
+        
+
+
     }
 }
 
