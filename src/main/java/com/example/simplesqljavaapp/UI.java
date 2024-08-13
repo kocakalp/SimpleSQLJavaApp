@@ -134,10 +134,10 @@ public class UI extends Application {
                         updateVBox.getChildren().clear();
                         String holder = a.getSelectedRow().toString();
                        // String holder1 = a.getSelectedRowWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue());
-
+                        System.out.println("Without primary key " + a.getDataWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                         String result = holder.replace(",?\\s*"+a.getSelectedRowWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()),"").replaceAll("\\s{2,}", " ").trim();
-
-                        TextField field = new TextField(result);
+                        System.out.println(holder.replace(",?\\s*"+a.getSelectedRowWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()),"").replaceAll("\\s{2,}", " ").trim());
+                        TextField field = new TextField(a.getDataWithoutPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                         updateVBox.getChildren().add(field);
                         Label primarkeyLabel = new Label("Primary Key Column: " + a.getPrimaryKey(databaseComboBox.getValue(), tableComboBox.getValue()));
                         primarkeyLabel.setFont(font_30);
@@ -164,6 +164,9 @@ public class UI extends Application {
 
         int numColumns = 3;
         insertButton.setOnAction(e -> {
+
+
+
             if (tableComboBox.getValue()!=null) {// tableComboBox'un içinde değer varsa
                 insertStage.setTitle("SQL Insert Screen");
                 insertStage.getIcons().add(new Image("/sailing.gif"));
@@ -172,10 +175,15 @@ public class UI extends Application {
                     insertGripPane.getChildren().clear();
                     ArrayList<String> columnNamesArraylist = a.getColumnNames(databaseComboBox.getValue(), tableComboBox.getValue());
 
+                    ArrayList<TextField> textFields = new ArrayList<>();
+
                     int row = 0;
                     for (int i = 0; i < columnNamesArraylist.size(); i++) {
                         TextField data_4 = new TextField();
                         data_4.setPromptText(columnNamesArraylist.get(i));
+
+                        textFields.add(data_4);
+
                         int column = i % numColumns;
                         if (column == 0 && i > 0) {
                             row++;
@@ -187,14 +195,22 @@ public class UI extends Application {
                     Button insertButton2 = new Button("Insert");
                     insertGripPane.add(primarkeyLabel, 0,row +1, numColumns,1);
 
-                    insertButton2.setOnAction(b -> {
-
-                    });
-
-
-
-
                     insertGripPane.add(insertButton2,0,row+2, numColumns,1);
+
+
+
+//                    insertButton2.setOnAction(b -> {
+//                        String enteredValue ="";
+//                        for(TextField textField : textFields) {
+//                            enteredValue = enteredValue + ""
+//                        }
+//
+//                    });
+
+
+
+
+
                 }
                 insertStage.setScene(insertScene);
                 insertStage.show();
@@ -311,7 +327,9 @@ public class UI extends Application {
 
 
 
-
+        crudButton.setStyle("-fx-background-color: #FFD700;");
+        crudButton.setOnMouseEntered(e -> crudButton.setStyle("-fx-background-color: #a5d9be"));
+        crudButton.setOnMouseExited(e -> crudButton.setStyle("-fx-background-color: #FFD700"));
 
         VBox vbox = new VBox();
         crudButton.setOnAction(e -> {

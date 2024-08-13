@@ -133,7 +133,11 @@ public class Sql {
         return tableView;
     }
 
-    public TableView<Map<String, Object>> getDataWithoutPrimaryKey(String database_name, String table_name) {
+    public String getDataWithoutPrimaryKey(String database_name, String table_name) {
+        ////////////////////
+        String from = "";
+        String string = "";
+        ////////////////////
 
         if (selectedRowWithoutPrimaryKey != null && !selectedRowWithoutPrimaryKey.isEmpty()) {
             selectedRowWithoutPrimaryKey.clear();
@@ -155,43 +159,35 @@ public class Sql {
                 Statement stmt = connection.createStatement();
 
                 if(table_name != null) {
-                    ResultSet sql = stmt.executeQuery("SELECT * FROM " + database_name +".[dbo]."+ table_name);
+                    ResultSet sql2 = stmt.executeQuery("SELECT * FROM " + database_name +".[dbo]."+ table_name);
                     System.out.println("SELECT * FROM " + database_name + ".[dbo]." + table_name);
-                    ResultSetMetaData rsMetaData = sql.getMetaData();
+                    ResultSetMetaData rsMetaData = sql2.getMetaData();
                     int count = rsMetaData.getColumnCount();
-                    ////////////////////
-                    String from = null;
-                    ////////////////////
                     for(int i = 1; i<=count; i++) {
                         String columnName = rsMetaData.getColumnName(i);
-                        TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
-                        column.setPrefWidth(100);
-                        column.setResizable(false);
-                        column.setReorderable(false);
-                        column.setSortable(false);
-                        column.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().get(columnName)));
-                        tableView.getColumns().add(column);
 //                        System.out.println(tableView.getSelectionModel().selectedItemProperty());
                         ////////////////////
 
-                        if(columnName.equals(getPrimaryKey(database_name, table_name))) {
+                        if(!columnName.equals(getPrimaryKey(database_name, table_name))) {
                             from = columnName + ", " +  from;
                         }
 
                         ////////////////////
                     }
                     ////////////////////
-                    from.substring(0,from.length()-1);
+                    System.out.println("From01 : " +from);
+                    from=from.substring(0,from.length()-2);
+                    System.out.println("From02 : " +from);
+                    ResultSet sql3 = stmt.executeQuery("SELECT "+ from + " FROM " + database_name +".[dbo]."+ table_name);
+                    string =sql3.toString();
+                    ResultSetMetaData rsMetaDataa = sql3.getMetaData();
+                    string=rsMetaDataa.toString();
+
+
+
                     ////////////////////
-                    while (sql.next()) {
-                        Map<String, Object> row = new HashMap<>();
-                        for (int i = 1; i <= count; i++) {
-                            String columnName = rsMetaData.getColumnName(i);
-                            row.put(columnName, sql.getObject(i));
-                        }
-                        observableList.add(row);
-                    }
-                    tableView.setItems(observableList);
+
+
                 }
             } else {
                 System.out.println("Failed to establish connection.");
@@ -202,14 +198,7 @@ public class Sql {
             System.out.println("SQL State: " + e.getSQLState());
             e.printStackTrace();
         }
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                selectedRowWithoutPrimaryKey = newSelection;
-                String a = selectedRowWithoutPrimaryKey.toString();
-                System.out.println("Selected row without primary key: " + selectedRowWithoutPrimaryKey);
-            }
-        });
-        return tableView;
+        return string;
     }
 
         public TableView<Map<String, Object>> getSearchedData(String database_name, String table_name, String searched) {
@@ -438,6 +427,10 @@ public class Sql {
         return selectedRow;
     }
 
+    public Map<String, Object> getSelectedRowWithoutPrimaryKey() {
+        return selectedRowWithoutPrimaryKey;
+    }
+
     public String getPrimaryKeyColumn() {
         return primaryKeyColumn;
     }
@@ -457,7 +450,7 @@ public class Sql {
 
 
 
-        return primary_key +" = " + selectedRowString.substring(startIndex + primary_key.length() + 1, endIndex);
+        return primary_key + " = " + selectedRowString.substring(startIndex + primary_key.length() + 1, endIndex);
     }
 }
 
